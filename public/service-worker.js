@@ -7,7 +7,6 @@ const FILES_TO_CACHE = [
     "manifest.json"
 ];
 
-
 const PRECACHE = "precache-v1";
 const RUNTIME = "runtime";
 
