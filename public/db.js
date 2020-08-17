@@ -1,5 +1,3 @@
-const { response } = require("express");
-
 const indexedDB =
     window.indexedDB ||
     window.mozIndexedDB ||
@@ -9,7 +7,7 @@ const indexedDB =
 
 let db;
 
-const request = indexDB.open("budget", 1);
+const request = indexedDB.open("budget", 1);
 
 request.onupgradeneeded = ({ target }) => {
     let db = target.result;
@@ -24,16 +22,21 @@ request.onsuccess = ({ target }) => {
     };
 };
 
-function saveToIndexDB(data) {
-    const transaction = db.transaction(["tracker"], "readWrite");
+request.onerror = function (event) {
+    console.log("Woops! " + event.target.errorCode);
+};
+
+
+function saveRecord(data) {
+    const transaction = db.transaction(["tracker"], "readwrite");
     let store = transaction.objectStore("tracker");
     store.add(data);
 };
 
 function getFromDatabase() {
-    const transaction = db.transaction(["tracker"], "readWrite");
+    const transaction = db.transaction(["tracker"], "readwrite");
     let store = transaction.objectStore("tracker");
-    let getRecord = store.getAll(
+    let getRecord = store.getAll()
         getRecord.onsuccess = function () {
             if (getRecord.result.length > 0) {
                 fetch("/api/transaction/bulk", {
@@ -49,7 +52,6 @@ function getFromDatabase() {
                 })
             }
         }
-    )
 };
 
 window.addEventListener("online", getFromDatabase);
